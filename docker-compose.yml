@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  web:
+    image: ghcr.io/teampass/teampass-web:latest
+    container_name: teampass-web
+    ports:
+      - "8080:80"
+      - "8443:443"
+    depends_on:
+      - php
+      - db
+  php:
+    image: ghcr.io/teampass/teampass-php:latest
+    container_name: teampass-php
+    volumes:
+      #- type: bind
+      #  source: ./app-logs
+      #  target: /app/Data/Logs
+      - type: volume
+        source: app-logs
+        target: /app/Data/Logs
+    restart: always
+    depends_on:
+      - db
+    environment:
+      FLOW_DB_HOST: db:3306
+      FLOW_DB_USER: teampass
+      FLOW_DB_PASSWORD: teampass
+      FLOW_DB_NAME: teampass
+  db:
+    image: mysql:5.7
+    container_name: teampass-mysql
+    volumes:
+      - db-data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: teampass
+      MYSQL_USER: teampass
+      MYSQL_PASSWORD: teampass
+
+volumes:
+  db-data:
+  app-logs:

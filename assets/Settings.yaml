@@ -1,0 +1,21 @@
+Neos:
+  Flow:
+    persistence:
+      backendOptions:
+        host: '%env:FLOW_DB_HOST%'
+        dbname: '%env:FLOW_DB_NAME%'
+        user: '%env:FLOW_DB_USER%'
+        password: '%env:FLOW_DB_PASSWORD%'
+#    core:
+#      phpBinaryPathAndFilename: '/usr/bin/php7.4'
+
+    error:
+      exceptionHandler:
+        className: 'TeamPass\Core\Error\JsonExceptionHandler'
+        defaultRenderingOptions: []
+
+        renderingGroups:
+          invalidSessionHttpExceptions:
+            matchingExceptionClassNames: ['TeamPass\Core\Exception\InvalidSessionHttpException']
+            options:
+              logException: false

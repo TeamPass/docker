@@ -1,0 +1,20 @@
+FROM nginx:latest
+LABEL maintainer Philipp Dittert <philipp.dittert@gmail.com>
+
+RUN openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
+    -subj "/C=US/ST=Massachusetts/L=Boston/O=MIT/CN=teampass.test" \
+    -keyout /etc/ssl/private/nginx-selfsigned.key  -out /etc/ssl/certs/nginx-selfsigned.crt
+
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY nginx-site.conf /etc/nginx/conf.d/site.conf
+
+COPY app /app/
+
+WORKDIR /app
+
+EXPOSE 80
+EXPOSE 443
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
