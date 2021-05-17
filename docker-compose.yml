@@ -14,12 +14,7 @@ services:
     image: ghcr.io/teampass/teampass-php:latest
     container_name: teampass-php
     volumes:
-      #- type: bind
-      #  source: ./app-logs
-      #  target: /app/Data/Logs
-      - type: volume
-        source: app-logs
-        target: /app/Data/Logs
+      - ./data/app-logs:/app/Data/Logs
     restart: always
     depends_on:
       - db
@@ -32,14 +27,30 @@ services:
     image: mysql:5.7
     container_name: teampass-mysql
     volumes:
-      - db-data:/var/lib/mysql
+      - ./data/db-data:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: teampass
       MYSQL_USER: teampass
       MYSQL_PASSWORD: teampass
-
-volumes:
-  db-data:
-  app-logs:
+  db-backup:
+    image: databack/mysql-backup
+    container_name: teampass-mysql-backup
+    restart: always
+    user: "0"
+    volumes:
+      - ./data/db-backups:/db
+      - ./assets/secure.sh:/scripts.d/post-backup/secure.sh
+    environment:
+      DB_DUMP_TARGET: /db
+      DB_USER: root
+      DB_PASS: root
+      DB_NAMES: teampass
+      DB_DUMP_FREQ: 5
+      DB_DUMP_BEGIN: +3
+      DB_SERVER: db
+      ENCKEY: <enter-encryption-key>
+      DB_DUMP_SAFECHARS: 1
+    depends_on:
+      - db
