@@ -2,7 +2,9 @@ FROM php:7.4-fpm
 
 LABEL maintainer Philipp Dittert <philipp.dittert@gmail.com>
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN apt-get update && apt-get install -y \
+        libldap-dev \
+    && docker-php-ext-install ldap mysqli pdo pdo_mysql
 
 COPY app /app/
 
